@@ -17,8 +17,8 @@ const montserrat = Montserrat({
 export const metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: "PrepHub",
-    template: `%s | PrepHub`,
+    default: "PostHub",
+    template: `%s | PostHub`,
   },
   description:
     "Unlock the world of technology with engaging and informative blog. Explore the latest trends and news.",
