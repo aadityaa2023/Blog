@@ -6,7 +6,7 @@ function TechpostLogo() {
       
       <Link href="/" className="flex items-center space-x-1">
         <span className="uppercase text-white bg-black px-2 py-1 rounded-l-md transition-colors duration-300 hover:bg-orange-500 hover:text-black">
-          Prep
+          Post
         </span>
       
         <span className="uppercase text-black bg-orange-500 px-2 py-1 rounded-r-md transition-colors duration-300 hover:bg-black hover:text-orange-500">
