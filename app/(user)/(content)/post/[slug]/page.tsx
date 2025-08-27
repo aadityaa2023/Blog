@@ -17,15 +17,8 @@ import "@/components/TextEditor/Tiptap/styles.css";
 import { getAllSlugs } from "@/db/queries/getAllSlugs";
 import PostOption from "./PostOption";
 
-// import { getImagePlaceholder } from "@/utils/getImagePlaceholder";
-
-// export const revalidate = 0;
-// export const dynamic = "force-dynamic";
-// export const fetchCache = "force-no-store";
-
-// export const dynamicParams = false;
-
-// export const dynamic = "force-static";
+// ✅ Make this page dynamic to avoid caching issues
+export const dynamic = "force-dynamic";
 
 type SinglePostPageProps = {
   params: {
@@ -39,16 +32,13 @@ type SinglePostPageProps = {
 
 export async function generateStaticParams() {
   const { slugs } = await getAllSlugs();
-
   return slugs;
 }
 
 export async function generateMetadata({
   params: { slug },
 }: SinglePostPageProps): Promise<Metadata> {
-  const { data: post } = await getSinglePost({
-    slug,
-  });
+  const { data: post } = await getSinglePost({ slug });
 
   if (!post) {
     return {
@@ -75,8 +65,9 @@ export async function generateMetadata({
         alt: post.title,
       },
       authors: usernameCapitalized,
-      publishedTime: post.createdAt.toISOString(),
-      modifiedTime: post.updatedAt.toISOString(),
+      // ✅ Ensure Date objects are handled properly
+      publishedTime: new Date(post.createdAt).toISOString(),
+      modifiedTime: new Date(post.updatedAt).toISOString(),
     },
     twitter: {
       card: "summary_large_image",
@@ -104,22 +95,20 @@ async function SinglePostPage({
     notFound();
   }
 
-  const articleUrl = `${BASE_URL}/post/${slug}`;
-
-  // const blurDataURL = await getImagePlaceholder(post.imageUrl);
+  // ✅ Sanitize slug (avoid `:` issues in URLs)
+  const safeSlug = slug.replace(/:/g, "-");
+  const articleUrl = `${BASE_URL}/post/${safeSlug}`;
 
   const blurDataURL = post.imageUrl.replace(
     "/upload/",
     "/upload/w_10/e_blur:100,q_100/"
   );
 
-  // console.log("blurdataurl", blurDataURL);
-
   return (
     <div className="relative flex-1 max-w-full lg:max-w-[796px]">
       <div className="overflow-hidden">
         <div className="mt-1.5 mb-4 flex justify-between items-center">
-          <div className=" text-gray-700 dark:text-gray-300 ">
+          <div className="text-gray-700 dark:text-gray-300">
             <Link
               href={`/category/${post.categoryName}`}
               className="capitalize text-sm lg:text-base link"
@@ -143,7 +132,7 @@ async function SinglePostPage({
 
             <div className="ml-2 lg:ml-0 text-xs lg:text-sm text-gray-700 dark:text-gray-300">
               <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-5 lg:gap-10 mt-3 lg:mt-5">
-                <div className="flex items-center gap-3  lg:gap-6 ">
+                <div className="flex items-center gap-3 lg:gap-6">
                   <div className="flex items-center gap-2">
                     <div className="relative w-[35px] h-[35px] rounded-full overflow-hidden">
                       {post.user.profile?.imageUrl ? (
@@ -204,7 +193,6 @@ async function SinglePostPage({
                   <SocialShare
                     articleUrl={articleUrl}
                     articleTitle={post.title}
-                    // via="TechPost"
                   />
                 </div>
               </div>
